@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author aless
+ * @author AlessandroSampaio
  */
 public class App extends Application {
     
@@ -15,10 +15,11 @@ public class App extends Application {
     public void start(Stage primaryStage) {
         MainPane root = new MainPane();
         
-        Scene scene = new Scene(root, 300, 250);
+        Scene scene = new Scene(root, 600, 400);
         
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("Controle de Coleta");
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
