@@ -50,6 +50,7 @@ public class MainPane extends AnchorPane {
 
         Menu provider = new Menu("_Produtores");
         MenuItem providerRegister = new MenuItem("_Cadastrar");
+        providerRegister.setOnAction(e -> addTab(new RegisterProducer()));
         MenuItem providerColect = new MenuItem("C_oletar");
         MenuItem providerPay = new MenuItem("_Pagar");
 
