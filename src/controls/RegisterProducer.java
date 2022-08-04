@@ -42,6 +42,7 @@ public class RegisterProducer extends Tab {
 
     public RegisterProducer() {
         super("Cadastro de Produtor");
+        this.setId("ProducerRegister");
 
         FirebirdConnectionFactoryImpl factory = new FirebirdConnectionFactoryImpl(ConnectionParameters.Default());
         DAO temp;

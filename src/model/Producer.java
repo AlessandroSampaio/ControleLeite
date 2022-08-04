@@ -70,8 +70,10 @@ public class Producer implements Model {
     public void changeStatus() {
         this.active = !active;
     }
-    
-    
-    
 
+    @Override
+    public String toString() {
+        return id + " - " + name;
+    }
+    
 }
