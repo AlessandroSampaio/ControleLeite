@@ -51,7 +51,10 @@ public class MainPane extends AnchorPane {
         Menu provider = new Menu("_Produtores");
         MenuItem providerRegister = new MenuItem("_Cadastrar");
         providerRegister.setOnAction(e -> addTab(new RegisterProducer()));
+        
         MenuItem providerColect = new MenuItem("C_oletar");
+        providerColect.setOnAction(e -> addTab(new RegisterCollect()));
+        
         MenuItem providerPay = new MenuItem("_Pagar");
 
         provider.getItems().addAll(providerRegister, new SeparatorMenuItem(), providerColect, providerPay);
@@ -81,6 +84,7 @@ public class MainPane extends AnchorPane {
     private void addTab(Tab tab) {
         if(this.tabPane.getTabs().stream().noneMatch(t -> t.getId().equals(tab.getId()))){
             this.tabPane.getTabs().add(tab);
+            this.tabPane.getSelectionModel().select(tab);
         }
     }       
 }
