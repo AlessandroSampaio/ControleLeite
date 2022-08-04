@@ -1,6 +1,7 @@
 package database.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,14 +20,49 @@ import model.Producer;
  * @author AlessandroSampaio
  */
 public class ProducerDAO extends BaseDaoImpl {
-    
+
     public ProducerDAO(DataSource ds) {
         super(ds);
     }
 
     @Override
     public boolean update(Model model) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (model instanceof Producer) {
+            Producer producer = (Producer) model;
+
+            String sql = "UPDATE PRODUTOR SET NOME = ?, ULTIMA_COLETA = ?, ATIVO = ?, CADASTRO = ? WHERE ID = ?";
+            Connection con = null;
+            try {
+                con = getNewConnection();
+                PreparedStatement ps = con.prepareStatement(sql);
+
+                ps.setString(1, producer.getName());
+                if (producer.getLastCollect() == null) {
+                    ps.setDate(2, null);
+                } else {
+                    ps.setDate(2, Date.valueOf(producer.getLastCollect().toLocalDate()));
+                }
+                ps.setBoolean(3, producer.isActive());
+                ps.setDate(4, Date.valueOf(producer.getRegisterDate().toLocalDate()));
+                ps.setInt(5, producer.getId());
+
+                ps.execute();
+                int affectedRows = ps.getUpdateCount();
+
+                return affectedRows == 1;
+            } catch (SQLException ex) {
+                Logger.getLogger(ProducerDAO.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                if (con != null) {
+                    try {
+                        con.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ProducerDAO.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -46,9 +82,10 @@ public class ProducerDAO extends BaseDaoImpl {
                 ps.setObject(3, producer.getRegisterDate());
                 ps.setBoolean(4, producer.isActive());
 
-                ResultSet result = ps.executeQuery();
-                
-                if(result.next()){                    
+                ps.execute();
+                ResultSet result = ps.getResultSet();
+
+                if (result.next()) {
                     producer.setId(result.getInt("ID"));
                     return true;
                 }
@@ -56,14 +93,15 @@ public class ProducerDAO extends BaseDaoImpl {
                 return false;
 
             } catch (SQLException ex) {
-                try {
-                    if (con != null) {
-                        con.rollback();
-                    }
-                } catch (SQLException ex1) {
-                    Logger.getLogger(ProducerDAO.class.getName()).log(Level.SEVERE, null, ex1);
-                }
                 Logger.getLogger(ProducerDAO.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                if (con != null) {
+                    try {
+                        con.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ProducerDAO.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
         return false;
@@ -90,10 +128,14 @@ public class ProducerDAO extends BaseDaoImpl {
                 Producer producer = new Producer();
                 producer.setId(rs.getInt("ID"));
                 producer.setName(rs.getString("NOME"));
-                if(rs.getString("ULTIMA_COLETA") != null){
-                    producer.setLastCollect(LocalDateTime.parse(rs.getString("ULTIMA_COLETA"), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.S")));
-                }                
-                producer.setRegisterDate(LocalDateTime.parse(rs.getString("CADASTRO"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")));
+                if (rs.getString("ULTIMA_COLETA") != null) {
+                    String lastCollect = rs.getString("ULTIMA_COLETA");
+                    lastCollect = lastCollect.substring(0, 19);
+                    producer.setLastCollect(LocalDateTime.parse(lastCollect, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                }
+                String registerDate = rs.getString("CADASTRO");
+                registerDate = registerDate.substring(0, 19);
+                producer.setRegisterDate(LocalDateTime.parse(registerDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 producer.setActive(rs.getBoolean("ATIVO"));
                 producers.add(producer);
             }

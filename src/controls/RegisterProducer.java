@@ -14,12 +14,15 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -55,11 +58,18 @@ public class RegisterProducer extends Tab {
         loadData();
     }
 
-    private VBox getContentBox() {
+    private AnchorPane getContentBox() {
         VBox contentBox = new VBox(20.0);
         contentBox.setPadding(new Insets(30.0));
         contentBox.getChildren().addAll(new Label("Cadastro de Produtor"), getProducerRegisterHBox(), tableView);
-        return contentBox;
+        
+        AnchorPane.setTopAnchor(contentBox, 0.0);
+        AnchorPane.setRightAnchor(contentBox, 0.0);
+        AnchorPane.setBottomAnchor(contentBox, 0.0);
+        AnchorPane.setLeftAnchor(contentBox, 0.0);
+        
+        AnchorPane pane = new AnchorPane(contentBox);
+        return pane;
     }
 
     private HBox getProducerRegisterHBox() {
@@ -89,7 +99,7 @@ public class RegisterProducer extends Tab {
         VBox.setVgrow(producerView, Priority.ALWAYS);
 
         TableColumn<ProducerTableMapper, String> idColumn = new TableColumn<>("Cod.");
-        idColumn.setCellValueFactory(param -> param.getValue().getId());
+        idColumn.setCellValueFactory(param -> param.getValue().getId());        
 
         TableColumn<ProducerTableMapper, String> nameColumn = new TableColumn<>("Nome");
         nameColumn.setCellValueFactory(param -> param.getValue().getName());
@@ -106,6 +116,22 @@ public class RegisterProducer extends Tab {
         activeColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
 
         producerView.getColumns().addAll(idColumn, nameColumn, registerDateColumn, lastCollectColumn, activeColumn);
+        
+        ContextMenu context = new ContextMenu();
+        MenuItem changeStatus = new MenuItem("Ativar/Inativar");
+        changeStatus.setOnAction(e -> {
+            Producer producer = tableView.getSelectionModel().getSelectedItem().getProducer();
+            producer.changeStatus();
+            if(dao.update(producer)){
+                tableView.getSelectionModel().getSelectedItem().getActive().set(producer.isActive());
+                tableView.refresh();
+            }            
+        });
+        
+        context.getItems().add(changeStatus);
+        
+        producerView.setContextMenu(context);
+        
         return producerView;
     }
 

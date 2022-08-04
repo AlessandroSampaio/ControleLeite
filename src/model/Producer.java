@@ -66,6 +66,10 @@ public class Producer implements Model {
     public void setActive(Boolean active) {
         this.active = active;
     }
+
+    public void changeStatus() {
+        this.active = !active;
+    }
     
     
     
