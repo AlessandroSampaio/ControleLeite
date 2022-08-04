@@ -54,11 +54,11 @@ public class RegisterProducer extends Tab {
 
         this.dao = temp;
         this.tableView = getProducerTableView();
-        this.setContent(getContentBox());
+        createContent();
         loadData();
     }
 
-    private AnchorPane getContentBox() {
+    private void createContent() {
         VBox contentBox = new VBox(20.0);
         contentBox.setPadding(new Insets(30.0));
         contentBox.getChildren().addAll(new Label("Cadastro de Produtor"), getProducerRegisterHBox(), tableView);
@@ -69,7 +69,7 @@ public class RegisterProducer extends Tab {
         AnchorPane.setLeftAnchor(contentBox, 0.0);
         
         AnchorPane pane = new AnchorPane(contentBox);
-        return pane;
+        this.setContent(pane);
     }
 
     private HBox getProducerRegisterHBox() {
